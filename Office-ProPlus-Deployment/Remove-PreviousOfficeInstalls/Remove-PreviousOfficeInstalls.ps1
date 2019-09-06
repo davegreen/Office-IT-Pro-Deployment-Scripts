@@ -638,27 +638,28 @@ Function Remove-PreviousOfficeInstalls{
                             }
                         }
                         "16.*"{
-                            if($Remove2016Installs){
-                                if($product.ClickToRun -eq $true){
-                                    $c2r2016Installed = $true
-                                }
+			    if(!$office16Removed){
+				if($Remove2016Installs){
+    				    if($product.ClickToRun -eq $true){
+					$c2r2016Installed = $true
+				    }
+    	                            if(!$c2r2016Installed){
+					$ActionFile = "$scriptPath\$16MSIVBS"
+				    } else {
+					if($RemoveClickToRunVersions){
+					    $ActionFile = "$scriptPath\$c2rVBS"  
+					} else {
+					    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2016 cannot be removed if 2016 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs." -LogFilePath $LogFilePath
+					    throw "Office 2016 cannot be removed if 2016 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs."
+					}
+				    }
 
-                                if(!$c2r2016Installed){
-                                    $ActionFile = "$scriptPath\$16MSIVBS"
-                                } else {
-                                    if($RemoveClickToRunVersions){
-                                        $ActionFile = "$scriptPath\$c2rVBS"  
-                                    } else {
-                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2016 cannot be removed if 2016 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs." -LogFilePath $LogFilePath
-                                        throw "Office 2016 cannot be removed if 2016 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs."
-                                    }
-                                }
-
-                                $cmdLine = """$ActionFile"" CLIENTALL $argList"
-                                $cmd = "cmd /c cscript //Nologo $cmdLine"
-                                Invoke-Expression $cmd
-                                $office16Removed = $true
-                            }
+                                    $cmdLine = """$ActionFile"" CLIENTALL $argList"
+				    $cmd = "cmd /c cscript //Nologo $cmdLine"
+				    Invoke-Expression $cmd
+				    $office16Removed = $true
+				}
+			    }
                         }
                     }
                 } catch {}
